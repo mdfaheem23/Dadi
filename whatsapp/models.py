@@ -2,8 +2,9 @@
 Pydantic models for incoming WhatsApp webhook payloads (Cloud API format).
 Reference: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples
 """
-from typing import Any, Optional
-from pydantic import BaseModel
+from typing import Optional
+from pydantic import BaseModel, Field
+from pydantic import ConfigDict
 
 
 # ---------------------------------------------------------------------------
@@ -53,17 +54,15 @@ class ReferredProduct(BaseModel):
 
 
 class Context(BaseModel):
-    from_: Optional[str] = None
+    model_config = ConfigDict(populate_by_name=True)
+    from_: Optional[str] = Field(None, alias="from")
     id: Optional[str] = None
-
-    class Config:
-        populate_by_name = True
-        fields = {"from_": "from"}
 
 
 class Message(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
     id: str
-    from_: str
+    from_: str = Field(alias="from")
     timestamp: str
     type: str
     context: Optional[Context] = None
@@ -72,10 +71,6 @@ class Message(BaseModel):
     image: Optional[Image] = None
     document: Optional[Document] = None
     reaction: Optional[Reaction] = None
-
-    class Config:
-        populate_by_name = True
-        fields = {"from_": "from"}
 
 
 class Metadata(BaseModel):
